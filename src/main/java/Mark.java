@@ -1,4 +1,5 @@
 import java.util.*;
+import java.sql.*;
 import java.time.temporal.ValueRange;
 public class Mark {
     public static void main(String ab[]){
@@ -15,13 +16,30 @@ public class Mark {
         int inp5=a.nextInt();
         System.out.println("Enter Social Science mark");
         int inp6=a.nextInt();
-        StdMark object_of_student= new StdMark(inp1,inp2,inp3,inp4,inp5,inp6);
-        object_of_student.result();
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/student","root","Arun@2001");
+            Statement statement  = connect.createStatement();
+            StdMark object_of_student = new StdMark(inp1, inp2, inp3, inp4, inp5, inp6);
+            String res=object_of_student.result();
+            int updating_mark = statement.executeUpdate("INSERT INTO mark VALUES('"+inp1+"',"+inp2+","+inp3+","+inp4+","+inp5+","+inp6+",'"+res+"')");
+            ResultSet output = statement.executeQuery("SELECT result FROM mark WHERE nam='"+inp1+"'");
+            while(output.next()) {
+                String prt = output.getString("result");
+                System.out.println(prt);
+            }
+            statement.close();
+            connect.close();
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
     }
 }
 class StdMark{
     int average_mark;
     String name;
+    String pass_fail;
     int tamil,english,math,science,social_science;
     StdMark(String name,int tamil,int english,int math,int science,int social_science){
         this.tamil=tamil;
@@ -37,21 +55,22 @@ class StdMark{
         //return average_mark;
     }
 
-    void result(){
+    String result(){
         average();
         System.out.println(average_mark);
         if (ValueRange.of(1,34).isValidIntValue(average_mark)){
-            System.out.println(name+" Fail");
+            pass_fail="Fail";
         }
-        else if(average_mark>34 && average_mark<60){
-            System.out.println(name+" passed with grade A");
+        else if(average_mark>34 && average_mark<=60){
+            pass_fail="passed with grade C";
         }
-        else if(average_mark>60 && average_mark<80){
-            System.out.println(name+" passed with grade B");
+        else if(average_mark>60 && average_mark<=80){
+            pass_fail="passed with grade B";
         }
         else if(average_mark>80 && average_mark<=100){
-            System.out.println(name+" passed with grade A");
+            pass_fail="passed with grade A";
         }
+        return pass_fail;
     }
 
 
