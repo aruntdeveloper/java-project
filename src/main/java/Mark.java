@@ -27,7 +27,7 @@ public class Mark {
             int updating_mark = statement.executeUpdate("INSERT INTO mark VALUES('"+inp1+"',"+inp2+","+inp3+","+inp4+","+inp5+","+inp6+",'"+res+"')");
             ResultSet output = statement.executeQuery("SELECT result FROM mark WHERE nam='"+inp1+"'");*/
 
-            StdMark object_of_student = new StdMark(inp1, inp2, inp3, inp4, inp5, inp6);
+            /*StdMark object_of_student = new StdMark(inp1, inp2, inp3, inp4, inp5, inp6);
             String res=object_of_student.result();
             PreparedStatement statement = connect.prepareStatement("INSERT INTO mark VALUES(?,?,?,?,?,?,?)");
             statement.setString(1,inp1);
@@ -44,8 +44,19 @@ public class Mark {
             while(output.next()) {
                 String prt = output.getString("result");
                 System.out.println(prt);
+            }*/
+
+            //SQL injection
+            StdMark object_of_student = new StdMark(inp1, inp2, inp3, inp4, inp5, inp6);
+            String res = object_of_student.result();
+            Statement statement  = connect.createStatement();
+            ResultSet output = statement.executeQuery("SELECT result FROM mark WHERE nam=''=''");
+            while(output.next()){
+                String prt=output.getString("result");
+                System.out.println(prt);
             }
-            //statement.close();
+
+            statement.close();
             connect.close();
         }
         catch(Exception e){
